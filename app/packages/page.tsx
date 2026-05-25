@@ -68,8 +68,10 @@ export default function PackagesPage() {
           setForm((prev: any) => ({ ...prev, panelBrand: Object.keys(parsed.panelWattsByBrand)[0], panelWatts: Object.values(parsed.panelWattsByBrand)[0] }));
         }
         if (parsed?.inverterSupportByBrand && Object.keys(parsed.inverterSupportByBrand).length) {
-          setInverterMap(parsed.inverterSupportByBrand);
-          setForm((prev: any) => ({ ...prev, inverterMake: prev.inverterMake || Object.keys(parsed.inverterSupportByBrand)[0] }));
+          const inverterSupport = parsed.inverterSupportByBrand ?? {};
+          const firstInverter = Object.keys(inverterSupport)[0] ?? "";
+          setInverterMap(inverterSupport);
+          setForm((prev: any) => ({ ...prev, inverterMake: prev.inverterMake || firstInverter }));
         }
       } catch {
         // ignore malformed settings
