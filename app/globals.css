@@ -1,0 +1,113 @@
+﻿@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 39 100% 99%;
+  --foreground: 24 20% 10%;
+  --primary: 31 95% 51%;
+  --primary-foreground: 0 0% 100%;
+  --muted: 36 70% 95%;
+  --muted-foreground: 24 8% 40%;
+  --accent: 39 100% 90%;
+  --accent-foreground: 24 20% 10%;
+  --border: 30 40% 85%;
+  --input: 30 40% 85%;
+  --ring: 31 95% 51%;
+}
+
+html { scroll-behavior: smooth; }
+
+body { @apply bg-background text-foreground; }
+
+@keyframes floatY { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+@keyframes floatY2 { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-5px)} }
+@keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+@keyframes fadeIn { from{opacity:0} to{opacity:1} }
+@keyframes spinSlow { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+@keyframes marquee { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+@keyframes slideLeft { from{opacity:0;transform:translateX(20px)} to{opacity:1;transform:translateX(0)} }
+@keyframes pricePulse { 0%{transform:scale(1)} 50%{transform:scale(1.08)} 100%{transform:scale(1)} }
+@keyframes panelPop {
+  0% { opacity: 0; transform: translateY(-8px) scale(0.92); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.float-logo { animation: floatY 3s infinite ease-in-out; }
+.landing-fadeup { opacity: 0; animation: fadeUp 0.5s forwards; }
+.landing-fadein { opacity: 0; animation: fadeIn 0.45s forwards; }
+.landing-slideleft { opacity: 0; animation: slideLeft 0.5s forwards; }
+.price-pulse { animation: pricePulse 0.3s ease; }
+
+.hero-circle-1 {
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  top: -80px;
+  right: -80px;
+  border: 1.5px solid #FED7AA;
+  border-radius: 9999px;
+  animation: spinSlow 20s linear infinite;
+}
+
+.hero-circle-2 {
+  position: absolute;
+  width: 180px;
+  height: 180px;
+  top: 10px;
+  right: 40px;
+  border: 1px solid #FDBA74;
+  border-radius: 9999px;
+  animation: spinSlow 15s linear infinite reverse;
+}
+
+.hero-house { animation: floatY2 4s infinite ease-in-out; }
+.panel-pop { opacity: 0; transform-origin: center; animation: panelPop 0.5s ease forwards; }
+.panel-1 { animation-delay: 0.2s; }
+.panel-2 { animation-delay: 0.5s; }
+.panel-3 { animation-delay: 0.8s; }
+
+.marquee-wrap {
+  overflow: hidden;
+  width: 100%;
+}
+
+.marquee-track {
+  display: inline-flex;
+  white-space: nowrap;
+  min-width: 200%;
+  animation: marquee 18s linear infinite;
+}
+
+.landing-card {
+  transition: all 0.2s ease;
+}
+
+.landing-card:hover {
+  transform: translateY(-4px);
+  border-color: #EA580C !important;
+}
+
+.btn-white-orange {
+  background: #ffffff;
+  color: #EA580C;
+  border: 1px solid #EA580C;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-white-orange:hover {
+  background: #EA580C;
+  color: #ffffff;
+  transform: translateY(-2px);
+}
+
+.card-hover-orange {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.card-hover-orange:hover {
+  border-color: #EA580C !important;
+  box-shadow: 0 0 0 2px rgba(234, 88, 12, 0.16);
+}

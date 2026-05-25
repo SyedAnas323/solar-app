@@ -1,0 +1,47 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Package {
+  id           String   @id @default(cuid())
+  name         String
+  capacity     Float
+  systemType   String
+  panelBrand   String
+  panelWatts   Int
+  panelCount   Int
+  inverterMake String
+  batteryKwh   Float?
+  basePrice    Float
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  quotes       Quote[]
+}
+
+model Customer {
+  id        String   @id @default(cuid())
+  name      String
+  phone     String
+  city      String
+  createdAt DateTime @default(now())
+  quotes    Quote[]
+}
+
+model Quote {
+  id         String   @id @default(cuid())
+  customer   Customer @relation(fields: [customerId], references: [id])
+  customerId String
+  package    Package  @relation(fields: [packageId], references: [id])
+  packageId  String
+  capacityKw Float
+  systemType String
+  totalCost  Float
+  status     String   @default("pending")
+  createdAt  DateTime @default(now())
+}
