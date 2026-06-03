@@ -2,20 +2,30 @@
 import LandingClient from "@/components/landing-client";
 
 export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
 
 export default async function LandingPage() {
-  const [packages, allPackagesForFilters, installedCount, totalQuotes] = await Promise.all([
-    prisma.package.findMany({
-      where: { isActive: true },
-      include: { _count: { select: { quotes: true } } },
-      orderBy: { createdAt: "desc" },
-    }),
-    prisma.package.findMany({
-      select: { systemType: true, capacity: true, panelBrand: true },
-    }),
-    prisma.quote.count({ where: { status: "installed" } }),
-    prisma.quote.count(),
-  ]);
+  let packages: any[] = [];
+  let allPackagesForFilters: any[] = [];
+  let installedCount = 0;
+  let totalQuotes = 0;
+
+  try {
+    [packages, allPackagesForFilters, installedCount, totalQuotes] = await prisma.$transaction([
+      prisma.package.findMany({
+        where: { isActive: true },
+        include: { _count: { select: { quotes: true } } },
+        orderBy: { createdAt: "desc" },
+      }),
+      prisma.package.findMany({
+        select: { systemType: true, capacity: true, panelBrand: true },
+      }),
+      prisma.quote.count({ where: { status: "installed" } }),
+      prisma.quote.count(),
+    ]);
+  } catch (error) {
+    console.error("Landing page DB fallback:", error);
+  }
 
   const systemTypes = Array.from(new Set(allPackagesForFilters.map((p) => p.systemType).filter(Boolean))).sort();
   const capacities = Array.from(new Set(allPackagesForFilters.map((p) => p.capacity).filter((v) => typeof v === "number"))).sort((a, b) => a - b);

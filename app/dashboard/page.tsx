@@ -4,10 +4,18 @@ import { Card } from "@/components/ui/card";
 import { Table, TableCell, TableHead } from "@/components/ui/table";
 
 export default async function DashboardPage() {
-  const [packages, quotes] = await Promise.all([
-    prisma.package.findMany(),
-    prisma.quote.findMany({ include: { customer: true }, orderBy: { createdAt: "desc" }, take: 5 }),
-  ]);
+  let packages: any[] = [];
+  let quotes: any[] = [];
+
+  try {
+    [packages, quotes] = await prisma.$transaction([
+      prisma.package.findMany(),
+      prisma.quote.findMany({ include: { customer: true }, orderBy: { createdAt: "desc" }, take: 5 }),
+    ]);
+  } catch (error) {
+    console.error("Dashboard DB fallback:", error);
+  }
+
   const monthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
   const quotesThisMonth = quotes.filter((q) => q.createdAt >= monthStart).length;
   const avgDeal = quotes.length ? quotes.reduce((s, q) => s + q.totalCost, 0) / quotes.length : 0;

@@ -2,11 +2,19 @@ import { prisma } from "@/lib/prisma";
 import { Card } from "@/components/ui/card";
 
 export default async function AnalyticsPage() {
-  const [quotes, customers, packages] = await Promise.all([
-    prisma.quote.findMany({ include: { package: true } }),
-    prisma.customer.count(),
-    prisma.package.count(),
-  ]);
+  let quotes: any[] = [];
+  let customers = 0;
+  let packages = 0;
+
+  try {
+    [quotes, customers, packages] = await prisma.$transaction([
+      prisma.quote.findMany({ include: { package: true } }),
+      prisma.customer.count(),
+      prisma.package.count(),
+    ]);
+  } catch (error) {
+    console.error("Analytics DB fallback:", error);
+  }
 
   const revenue = quotes.reduce((s, q) => s + q.totalCost, 0);
   const approved = quotes.filter((q) => q.status === "approved").length;
