@@ -13,7 +13,8 @@ npm install
 ```bash
 cp .env.example .env
 ```
-Update `DATABASE_URL`, `NEXTAUTH_SECRET`, and admin credentials.
+Update `DATABASE_URL`, `DIRECT_URL`, `NEXTAUTH_SECRET`, and admin credentials.
+Use the Supabase transaction pooler URL for `DATABASE_URL` (`:6543?pgbouncer=true`) and the direct database URL for `DIRECT_URL`.
 
 3. Push schema
 ```bash
