@@ -1,7 +1,14 @@
 import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-const nextAuthSecret = process.env.NEXTAUTH_SECRET || "solarpro-dev-secret-change-me";
 import { verifyAdminCredentials } from "@/lib/admin-credentials";
+
+const siteUrl =
+  process.env.NEXTAUTH_URL ||
+  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
+const nextAuthSecret = process.env.NEXTAUTH_SECRET || "solarpro-dev-secret-change-me";
+
+process.env.NEXTAUTH_URL = siteUrl;
+process.env.NEXTAUTH_SECRET = nextAuthSecret;
 
 export const authOptions: NextAuthOptions = {
   session: { strategy: "jwt" },
