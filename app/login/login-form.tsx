@@ -14,11 +14,12 @@ export default function LoginForm() {
     <div className="grid min-h-screen place-items-center bg-gradient-to-b from-orange-50 to-white p-4">
       <form
         className="w-full max-w-sm space-y-3 rounded-lg border bg-white p-6"
-        onSubmit={async (e) => {
+      onSubmit={async (e) => {
           e.preventDefault();
-          const res = await signIn("credentials", { email, password, redirect: false });
+          setError("");
+          const res = await signIn("credentials", { email, password, redirect: false, callbackUrl: "/dashboard" });
           if (res?.ok) window.location.href = "/dashboard";
-          else setError("Invalid credentials");
+          else setError(res?.error === "CredentialsSignin" ? "Invalid credentials" : "Login failed. Please try again.");
         }}
       >
         <h1 className="text-xl font-bold">Admin Login</h1>

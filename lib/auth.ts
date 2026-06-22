@@ -3,6 +3,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 
 const adminEmail = process.env.ADMIN_EMAIL || "admin@solarpro.com";
 const adminPassword = process.env.ADMIN_PASSWORD || "admin123";
+const nextAuthSecret = process.env.NEXTAUTH_SECRET || "solarpro-dev-secret-change-me";
 
 export const authOptions: NextAuthOptions = {
   session: { strategy: "jwt" },
@@ -22,6 +23,9 @@ export const authOptions: NextAuthOptions = {
       },
     }),
   ],
-  pages: { signIn: "/login" },
-  secret: process.env.NEXTAUTH_SECRET,
+  pages: {
+    signIn: "/login",
+    error: "/login",
+  },
+  secret: nextAuthSecret,
 };
