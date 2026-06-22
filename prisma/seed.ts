@@ -1,6 +1,9 @@
 import { PrismaClient } from "@prisma/client";
+import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
+const bootstrapEmail = process.env.ADMIN_EMAIL || "admin@solarpro.com";
+const bootstrapPassword = process.env.ADMIN_PASSWORD || "admin123";
 
 async function main() {
   await prisma.package.createMany({
@@ -13,6 +16,16 @@ async function main() {
     ],
     skipDuplicates: true,
   });
+
+  const existingAdmin = await prisma.adminCredential.findFirst({ orderBy: { createdAt: "asc" } });
+  if (!existingAdmin) {
+    await prisma.adminCredential.create({
+      data: {
+        email: bootstrapEmail,
+        passwordHash: await bcrypt.hash(bootstrapPassword, 10),
+      },
+    });
+  }
 }
 
 main().finally(async () => prisma.$disconnect());

@@ -1,9 +1,7 @@
 import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-
-const adminEmail = process.env.ADMIN_EMAIL || "admin@solarpro.com";
-const adminPassword = process.env.ADMIN_PASSWORD || "admin123";
 const nextAuthSecret = process.env.NEXTAUTH_SECRET || "solarpro-dev-secret-change-me";
+import { verifyAdminCredentials } from "@/lib/admin-credentials";
 
 export const authOptions: NextAuthOptions = {
   session: { strategy: "jwt" },
@@ -16,10 +14,8 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials.password) return null;
-        if (credentials.email === adminEmail && credentials.password === adminPassword) {
-          return { id: "admin", email: adminEmail, name: "Solar Admin" };
-        }
-        return null;
+        const admin = await verifyAdminCredentials(credentials.email, credentials.password);
+        return admin ? { id: admin.id, email: admin.email, name: "Solar Admin" } : null;
       },
     }),
   ],

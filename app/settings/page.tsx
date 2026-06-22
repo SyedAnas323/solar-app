@@ -75,6 +75,10 @@ const normalizeSettings = (input: any): AppSettings => ({
 export default function SettingsPage() {
   const [settings, setSettings] = useState<AppSettings>(defaultSettings);
   const [savedAt, setSavedAt] = useState<string>("");
+  const [adminEmail, setAdminEmail] = useState("");
+  const [adminPassword, setAdminPassword] = useState("");
+  const [adminSavedAt, setAdminSavedAt] = useState("");
+  const [savingAdmin, setSavingAdmin] = useState(false);
   const [newBrand, setNewBrand] = useState("");
   const [newBrandWatts, setNewBrandWatts] = useState(550);
   const [newInverter, setNewInverter] = useState("");
@@ -89,6 +93,21 @@ export default function SettingsPage() {
         setSettings(defaultSettings);
       }
     }
+  }, []);
+
+  useEffect(() => {
+    const loadAdmin = async () => {
+      try {
+        const res = await fetch("/api/admin-credentials");
+        if (!res.ok) return;
+        const data = await res.json();
+        setAdminEmail(data.email || "");
+      } catch {
+        // ignore load issues and keep the form usable
+      }
+    };
+
+    loadAdmin();
   }, []);
 
   const setNumber = (path: string, value: string) => {
@@ -111,6 +130,30 @@ export default function SettingsPage() {
   const save = () => {
     localStorage.setItem(storageKey, JSON.stringify(settings));
     setSavedAt(new Date().toLocaleTimeString());
+  };
+
+  const saveAdminCredentials = async () => {
+    if (!adminEmail.trim() || !adminPassword.trim()) {
+      return;
+    }
+
+    try {
+      setSavingAdmin(true);
+      const res = await fetch("/api/admin-credentials", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: adminEmail.trim(), password: adminPassword }),
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to save admin credentials");
+      }
+
+      setAdminPassword("");
+      setAdminSavedAt(new Date().toLocaleTimeString());
+    } finally {
+      setSavingAdmin(false);
+    }
   };
 
   const reset = () => {
@@ -165,6 +208,30 @@ export default function SettingsPage() {
       </div>
 
       <div className="grid gap-4 lg:grid-cols-2">
+        <div className="rounded-xl border bg-white p-5 space-y-3">
+          <h3 className="font-semibold">Admin Login</h3>
+          <p className="text-sm text-gray-500">Yahan se live login email aur password update kar sakte hain.</p>
+          <input
+            className="h-10 w-full rounded border px-3"
+            value={adminEmail}
+            onChange={(e) => setAdminEmail(e.target.value)}
+            placeholder="Admin email"
+          />
+          <input
+            className="h-10 w-full rounded border px-3"
+            type="password"
+            value={adminPassword}
+            onChange={(e) => setAdminPassword(e.target.value)}
+            placeholder="New password"
+          />
+          <div className="flex flex-wrap gap-2">
+            <button type="button" className="rounded bg-orange-600 px-4 py-2 text-white" onClick={saveAdminCredentials} disabled={savingAdmin}>
+              {savingAdmin ? "Saving..." : "Save Admin Login"}
+            </button>
+            {adminSavedAt ? <p className="self-center text-sm text-green-700">Saved at {adminSavedAt}</p> : null}
+          </div>
+        </div>
+
         <div className="rounded-xl border bg-white p-5 space-y-3">
           <h3 className="font-semibold">Company</h3>
           <input
