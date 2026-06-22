@@ -32,5 +32,8 @@ export async function PUT(req: Request) {
   }
 
   const admin = await saveAdminCredentials(email, password);
+  if (!admin) {
+    return NextResponse.json({ error: "Admin credentials could not be saved right now" }, { status: 503 });
+  }
   return NextResponse.json({ email: admin.email });
 }

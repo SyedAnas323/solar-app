@@ -146,11 +146,14 @@ export default function SettingsPage() {
       });
 
       if (!res.ok) {
-        throw new Error("Failed to save admin credentials");
+        const data = await res.json().catch(() => null);
+        throw new Error(data?.error || "Failed to save admin credentials");
       }
 
       setAdminPassword("");
       setAdminSavedAt(new Date().toLocaleTimeString());
+    } catch (error) {
+      alert(error instanceof Error ? error.message : "Failed to save admin credentials");
     } finally {
       setSavingAdmin(false);
     }
